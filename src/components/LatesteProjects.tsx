@@ -39,7 +39,7 @@ const LatestProject: React.FC<LatestProjectProps> = ({ LatestProjects }) => {
 
       {top5UpdatedProjects.length > 0 ? (
         <ScrollArea className="w-full pr-1">
-          <CardContent className="max-h-[190px] p-0 -mt-1">
+          <CardContent className="max-h-[198px] p-0 -mt-1">
             <div className="flex flex-col gap-2 p-1">
               {top5UpdatedProjects.map((project) => (
                 <Card

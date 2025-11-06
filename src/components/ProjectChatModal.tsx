@@ -8,6 +8,9 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
+  limit,
+  startAfter,
+  getDocs,
 } from "firebase/firestore";
 import { db } from "@/Config/firbase";
 import { useUserContextId } from "@/AuthContext/UserContext";
@@ -32,7 +35,6 @@ import Loader from "./Loader";
 export default function ProjectChatModal({ projectId }: { projectId: string }) {
   const { userContextId } = useUserContextId();
   const { userData } = useTaskContext();
-
   const [messages, setMessages] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [assignedUsers, setAssignedUsers] = useState<string[]>([]);
@@ -40,8 +42,11 @@ export default function ProjectChatModal({ projectId }: { projectId: string }) {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [typing, setTyping] = useState(false);
-
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [lastDoc, setLastDoc] = useState<any>(null);
+  const [hasMore, setHasMore] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -63,18 +68,57 @@ export default function ProjectChatModal({ projectId }: { projectId: string }) {
   useEffect(() => {
     const q = query(
       collection(db, "Projects", projectId, "chat"),
-      orderBy("createdAt", "asc")
+      orderBy("createdAt", "desc"),
+      limit(10)
     );
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setMessages(msgs);
+      setMessages(msgs.reverse());
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+      setHasMore(snapshot.size === 10);
     });
+
     return () => unsubscribe();
   }, [projectId]);
 
+  const loadMore = async () => {
+    if (!lastDoc || loadingMore) return;
+    setLoadingMore(true);
+
+    const scrollPos = scrollContainerRef.current?.scrollHeight || 0;
+
+    const next = query(
+      collection(db, "Projects", projectId, "chat"),
+      orderBy("createdAt", "desc"),
+      startAfter(lastDoc),
+      limit(10)
+    );
+
+    const snapshot = await getDocs(next);
+    const newMsgs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    if (newMsgs.length > 0) {
+      setMessages((prev) => [...newMsgs.reverse(), ...prev]);
+      setLastDoc(snapshot.docs[snapshot.docs.length - 1]);
+      setHasMore(snapshot.size === 10);
+    } else {
+      setHasMore(false);
+    }
+
+    setLoadingMore(false);
+
+    requestAnimationFrame(() => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop =
+          scrollContainerRef.current.scrollHeight - scrollPos;
+      }
+    });
+  };
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages.length]);
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,6 +146,7 @@ export default function ProjectChatModal({ projectId }: { projectId: string }) {
     typingTimeoutRef.current = setTimeout(() => setTyping(false), 1500);
   };
 
+  // 🧠 Check if user can chat
   const canChat = useMemo(
     () =>
       ownerId === userContextId ||
@@ -149,7 +194,7 @@ export default function ProjectChatModal({ projectId }: { projectId: string }) {
             </div>
           ) : (
             <>
-              {/* Participants */}
+              {/* Participants Sidebar */}
               <div className="w-1/3 border-r bg-muted/10 flex flex-col">
                 <div className="p-4 border-b">
                   <h3 className="font-semibold text-sm uppercase text-muted-foreground">
@@ -158,7 +203,6 @@ export default function ProjectChatModal({ projectId }: { projectId: string }) {
                 </div>
 
                 <ScrollArea className="flex-1 p-4 space-y-2">
-                  {/* Current User */}
                   {userData && (
                     <div className="flex items-center gap-3 p-2 rounded-lg bg-muted/20 border border-transparent hover:border-border transition cursor-pointer">
                       <Avatar className="w-9 h-9 border">
@@ -183,12 +227,9 @@ export default function ProjectChatModal({ projectId }: { projectId: string }) {
 
                   <Separator className="my-3" />
 
-                  {/* Assigned Users */}
                   {assignedUsers.length > 0 ? (
                     assignedUsers.map((userId, i) => {
-                      // Don't show the current user again
                       if (userId === userData?.id) return null;
-
                       return (
                         <div
                           key={i}
@@ -211,10 +252,25 @@ export default function ProjectChatModal({ projectId }: { projectId: string }) {
                 </ScrollArea>
               </div>
 
-              {/* Chat */}
               <div className="flex-1 flex flex-col bg-background">
-                <ScrollArea className="flex-1 h-[40vh] px-4 py-2">
+                <ScrollArea
+                  ref={scrollContainerRef}
+                  className="flex-1 h-[40vh] px-4 py-2"
+                >
                   <div className="space-y-2">
+                    {hasMore && (
+                      <div className="flex justify-center mb-3">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={loadMore}
+                          disabled={loadingMore}
+                        >
+                          {loadingMore ? "Loading..." : "Load older messages"}
+                        </Button>
+                      </div>
+                    )}
+
                     {messages.map((msg) => {
                       const isUser = msg.senderId === userContextId;
                       return (

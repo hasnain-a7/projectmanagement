@@ -12,6 +12,7 @@ import {
   SelectItem,
   SelectValue,
 } from "@/components/ui/select";
+import { motion } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
@@ -170,8 +171,8 @@ const HomePage = () => {
           <Loader />
         </div>
       ) : (
-        <div className="h-full  p-2 bg-background md:p-1 ">
-          <main className="w-full mx-auto pt-2 flex-1 ">
+        <div className="h-full  p-1 bg-background md:p-1 ">
+          <main className="w-full mx-auto pt-1 flex-1 ">
             <section className="mb-1">
               <div className="grid px-0.5 py-0.5 auto-rows-min gap-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
                 <StatsCard
@@ -205,7 +206,7 @@ const HomePage = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-col md:flex-row lg:flex-row lg:items-center lg:justify-between w-full gap-2 pt-2 shadow-sm">
-                    <div className="relative flex items-center  w-full sm:max-w-sm md:max-w-[240px] lg:max-w-[200px] xl:w-full ">
+                    <div className="relative flex items-center  w-full sm:max-w-sm md:max-w-full lg:max-w-full xl:w-full ">
                       <Search
                         className="absolute left-3 text-muted-foreground"
                         size={18}
@@ -255,7 +256,7 @@ const HomePage = () => {
                           <Button
                             variant="outline"
                             size="default"
-                            className="min-w-max md:min-w-[120px] flex items-center gap-2 font-medium whitespace-nowrap"
+                            className="min-w-min md:min-w-[120px] flex items-center gap-2 font-medium whitespace-nowrap"
                           >
                             <Plus size={18} />
 
@@ -307,10 +308,24 @@ const HomePage = () => {
                     </div>
                   </div>
                   <Separator />
-                  <div className="w-full min-h-[340px] md:min-h-[500px] lg:min-h-[340px] xl:h-full  rounded-lg grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+                  <div className="w-full min-h-[340px] md:min-h-[500px] lg:min-h-[340px] xl:h-full rounded-lg grid gap-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {currentProjects.length > 0 ? (
-                      currentProjects.map((project) => (
-                        <div key={project.id} className="w-full h-full">
+                      currentProjects.map((project, index) => (
+                        <motion.div
+                          key={project.id}
+                          className="w-full h-full"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{
+                            duration: 0.4,
+                            delay: index * 0.07,
+                            ease: "easeOut",
+                          }}
+                          whileHover={{
+                            scale: 1.02,
+                            transition: { duration: 0.2 },
+                          }}
+                        >
                           <ProjectCard
                             projectToShow={project}
                             tasks={
@@ -318,7 +333,7 @@ const HomePage = () => {
                             }
                             onClick={handleProjectClick}
                           />
-                        </div>
+                        </motion.div>
                       ))
                     ) : (
                       <p className="text-muted-foreground text-center col-span-full pt-12">
@@ -381,7 +396,7 @@ const HomePage = () => {
               >
                 <div className="flex flex-col gap-2 sm:flex-col md:flex-row">
                   <Card
-                    className="max-h-[392px]  flex p-1 border border-border/50 rounded-lg flex-col gap-1 
+                    className="max-h-[392px] bg-background flex p-0 border-none flex-col  
                      w-full md:w-1/2"
                   >
                     <CardHeader className="flex justify-between -ml-5">
@@ -403,6 +418,9 @@ const HomePage = () => {
                 </div>
               </div>
             </section>
+            {/* <section className="-mt-2">
+              <ProjectsBoard />
+            </section> */}
           </main>
         </div>
       )}

@@ -33,6 +33,7 @@ interface Project {
   assignedUsers?: string[];
   comments?: number;
   members?: { avatar: string; name: string }[];
+  projectEmoji?: string;
 }
 
 interface ProjectCardProps {
@@ -113,15 +114,26 @@ export const ProjectCard = ({
             <ProjectModol ProjectToEdit={projectToShow} />
           </Dialog>
         </div>
+        {projectToShow?.projectEmoji && (
+          <span className="text-lg absolute top-30 md:top-12 left-0">
+            {projectToShow.projectEmoji}
+          </span>
+        )}
       </CardHeader>
 
       <CardContent
         className="flex flex-col gap-1 -mt-2 -ml-3 px-4"
         onClick={handleCardClick}
       >
-        <CardTitle className="text-base font-semibold line-clamp-2">
-          {projectToShow?.title.charAt(0).toUpperCase() +
-            projectToShow?.title.slice(1)}
+        <CardTitle
+          className={`text-base font-semibold ${
+            projectToShow?.projectEmoji && "ml-6"
+          }`}
+        >
+          <span>
+            {projectToShow?.title.charAt(0).toUpperCase() +
+              projectToShow?.title.slice(1)}
+          </span>
         </CardTitle>
 
         <p className="text-sm text-muted-foreground line-clamp-2 ">
@@ -140,11 +152,11 @@ export const ProjectCard = ({
 
           <div className="flex gap-2">
             <span className="flex items-center gap-1 text-muted-foreground">
-              <Paperclip className="w-3 h-3" />{" "}
+              <Paperclip className="w-3 h-3" />
               {projectToShow?.attachments?.length || 0}
             </span>
             <span className="flex items-center gap-1 text-muted-foreground">
-              <UsersIcon className="w-3 h-3" />{" "}
+              <UsersIcon className="w-3 h-3" />
               {projectToShow?.assignedUsers?.length || 0}
             </span>
           </div>
@@ -159,7 +171,7 @@ export const ProjectCard = ({
           </span>
         </div>
 
-        {projectToShow?.assignedUsers &&
+        {/* {projectToShow?.assignedUsers &&
           projectToShow.assignedUsers?.length > 0 && (
             <div className="flex  -space-x-2 -mt-2 ml-2 -mr-2">
               {projectToShow.assignedUsers.slice(0, 3).map((i) => (
@@ -176,7 +188,7 @@ export const ProjectCard = ({
             <span className="w-5 h-5 flex items-center -mr-3 justify-center rounded-full bg-muted text-[10px] font-medium border border-background -mt-2">
               +{projectToShow?.assignedUsers.length - 3}
             </span>
-          )}
+          )} */}
       </CardFooter>
     </Card>
   );

@@ -20,6 +20,7 @@ import { useTaskContext } from "@/TaskContext/TaskContext";
 import { useUserContextId } from "@/AuthContext/UserContext";
 import DatePicker from "./DatePicker";
 import { Separator } from "./ui/separator";
+import EmojiInput from "./EmojiInput";
 
 type ProjectToEdit = {
   id?: string;
@@ -31,6 +32,7 @@ type ProjectToEdit = {
   status?: string;
   userId?: string;
   assignedUsers?: string[];
+  projectEmoji?: string;
 };
 
 export default function ProjectModol({
@@ -48,11 +50,23 @@ export default function ProjectModol({
     dueDate: "",
     status: "backlog",
     assignedUsers: [],
+    projectEmoji: "",
   });
   const [deletedUserIds, setDeletedUserIds] = useState<string[]>([]);
 
   const { userContextId } = useUserContextId();
   const { loading, addProject, updateProject } = useTaskContext();
+  const statusOptions = useMemo(
+    () => [
+      "pending",
+      "active",
+      "inactive",
+      "cancelled",
+      "completed",
+      "backlog",
+    ],
+    []
+  );
   const handleInputChange = useCallback(
     (field: keyof ProjectToEdit, value: string) => {
       setFormData((prev) => ({ ...prev, [field]: value }));
@@ -70,59 +84,81 @@ export default function ProjectModol({
         dueDate: ProjectToEdit.dueDate || "",
         status: ProjectToEdit.status || "",
         assignedUsers: ProjectToEdit.assignedUsers || [],
+        projectEmoji: ProjectToEdit.projectEmoji,
       });
     }
   }, [ProjectToEdit]);
 
   const handleSubmit = async () => {
-    if (!formData.title.trim()) return;
+    const requiredFields = [
+      { field: "title", label: "Project Title" },
+      { field: "description", label: "Description" },
+      { field: "Category", label: "Category" },
+      { field: "dueDate", label: "Due Date" },
+      { field: "status", label: "Status" },
+    ];
 
-    if (ProjectToEdit) {
-      await updateProject(
-        ProjectToEdit.id || "",
-        formData.title,
-        formData.description || "",
-        formData.Category,
-        formData.attachments,
-        formData.dueDate || "",
-        formData.status || "backlog",
-        formData.assignedUsers || [],
-        deletedUserIds
-      );
-    } else {
-      await addProject(
-        formData.title,
-        userContextId || "",
-        formData.description,
-        formData.Category || "",
-        formData.attachments || [],
-        formData.dueDate || "",
-        formData.status || "backlog"
-      );
+    const missing = requiredFields.filter(
+      (f) => !formData[f.field as keyof ProjectToEdit]?.toString().trim()
+    );
+
+    if (missing.length > 0) {
+      const missingList = missing.map((m) => m.label).join(", ");
+      alert(`Please fill in all required fields: ${missingList}`);
+      return;
     }
 
-    setFormData({
-      title: "",
-      description: "",
-      attachments: [],
-      Category: "",
-      dueDate: "",
-      status: "",
-      assignedUsers: [],
-    });
-    if (onClose) onClose();
+    const payload = {
+      ...formData,
+      userId: userContextId || "",
+      emoji: formData.projectEmoji || "",
+    };
+
+    try {
+      if (ProjectToEdit) {
+        await updateProject(
+          ProjectToEdit.id || "",
+          payload.title,
+          payload.description,
+          payload.Category,
+          payload.attachments,
+          payload.dueDate,
+          payload.status,
+          payload.assignedUsers,
+          deletedUserIds,
+          payload.emoji
+        );
+      } else {
+        await addProject(
+          payload.title,
+          payload.userId,
+          payload.description,
+          payload.Category || "",
+          payload.attachments || [],
+          payload.dueDate,
+          payload.status,
+          payload.emoji
+        );
+      }
+
+      setFormData({
+        title: "",
+        description: "",
+        attachments: [],
+        Category: "",
+        dueDate: "",
+        status: "",
+        assignedUsers: [],
+        projectEmoji: "",
+      });
+
+      if (onClose) onClose();
+    } catch (error) {
+      console.error("Error saving project:", error);
+      alert("An error occurred while saving the project.");
+    }
   };
-  const statusOptions = useMemo(
-    () => [
-      "pending",
-      "active",
-      "inactive",
-      "cancelled",
-      "completed",
-      "backlog",
-    ],
-    []
-  );
+
   const isOwner = ProjectToEdit
     ? ProjectToEdit?.userId === userContextId
     : true;
@@ -140,23 +176,31 @@ export default function ProjectModol({
       </DialogHeader>
 
       <div className="grid md:grid-cols-2 gap-4">
-        {/* Left Side - Text Fields */}
         <div className="flex flex-col gap-4">
           <div className="space-y-2">
-            <label
-              className="text-sm 
-             font-medium text-foreground"
-            >
+            <label className="text-sm font-medium text-foreground">
               Project Title
             </label>
-            <Input
-              placeholder="Enter project title..."
-              value={formData.title}
-              className="mt-2"
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-            />
+
+            <div className="relative flex items-center gap-2 mt-2">
+              <Input
+                placeholder="Enter project title..."
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                className="flex-1 pr-10"
+              />
+
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <EmojiInput
+                  value={formData?.projectEmoji || ""}
+                  onChange={(projectEmoji) =>
+                    setFormData({ ...formData, projectEmoji })
+                  }
+                />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">

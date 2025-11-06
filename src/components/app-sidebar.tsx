@@ -1,7 +1,7 @@
 import * as React from "react";
 import { NavLink } from "react-router-dom";
 import { IoHomeOutline } from "react-icons/io5";
-import { AiOutlinePlus, AiOutlineDelete } from "react-icons/ai";
+import { AiOutlinePlus } from "react-icons/ai";
 import { Separator } from "./ui/separator";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Bot, FolderOpen } from "lucide-react";
@@ -23,14 +23,13 @@ import { useTaskContext } from "@/TaskContext/TaskContext";
 import SidebarFooter from "./sidebar-footer";
 import Loader from "./Loader";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { projects, deleteProject, loading } = useTaskContext();
+  const { projects, taskCache, loading } = useTaskContext();
   const { setOpen, state } = useSidebar();
   const [hovered, setHovered] = React.useState(false);
   const items = [
     { title: "Home", url: ".", icon: IoHomeOutline },
-    { title: "Assign Projects", url: "assign-projects", icon: FolderOpen },
+    { title: "Projects", url: "assign-projects", icon: FolderOpen },
     { title: "Ai Talk", url: "ai-talk", icon: Bot },
   ];
   return (
@@ -39,7 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       {...props}
       className="flex flex-col h-full bg-sidebar"
     >
-      <div className="md:hidden flex items-center justify-between px-5 pt-2 -mb-2">
+      <div className="md:hidden flex items-center justify-between px-4 pt-2 -mb-2">
         <span className="font-semibold text-base tracking-tight">Menu</span>
         <SidebarTrigger className="scale-90" />
       </div>
@@ -161,7 +160,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
             <Separator className="my-3" />
 
-            {/* Projects Section */}
             <div
               className={`flex items-center ${
                 state === "expanded"
@@ -205,129 +203,82 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
               )}
             </div>
-            <ScrollArea className="h-64">
-              <SidebarMenu>
-                {projects.length > 0 ? (
-                  [...projects]
-                    .sort(
-                      (a, b) =>
-                        new Date(b.createdAt).getTime() -
-                        new Date(a.createdAt).getTime()
-                    )
-
-                    .map((project) => (
-                      <SidebarMenuItem
-                        key={project.id}
-                        className={`flex items-center justify-between ${
-                          state === "expanded"
-                            ? "flex-row"
-                            : "flex-col w-full justify-center text-lg"
-                        }`}
-                      >
-                        <NavLink
-                          to={`projects/${project.id}`}
-                          className="flex-1 hidden md:flex "
-                          onClick={() => {
-                            setOpen(false);
-                          }}
-                        >
-                          {({ isActive }) => (
-                            <SidebarMenuButton
-                              tooltip={
-                                project?.title.charAt(0).toUpperCase() +
-                                project?.title.slice(1)
-                              }
-                              isActive={isActive}
-                              className={`flex items-center ${
-                                state === "expanded"
-                                  ? "gap-2 px-2 py-1.5"
-                                  : "flex-col gap-1 p-1 justify-center"
-                              } rounded-md transition-colors ${
-                                isActive
-                                  ? "bg-primary text-white"
-                                  : "hover:bg-sidebar-accent hover:text-foreground"
-                              }`}
-                            >
-                              <span className=" text-[14px] flex gap-2 font-medium truncate max-w-[120px]">
-                                {state === "collapsed"
-                                  ? project.title.toUpperCase()[0] +
-                                    project.title.slice(-1)
-                                  : project.title.charAt(0).toUpperCase() +
-                                    project.title.slice(1)}
-                              </span>
-                            </SidebarMenuButton>
-                          )}
-                        </NavLink>
-                        {/* Mobile Project Item (with Delete Button) */}
-                        <div className="flex items-center justify-between w-full md:hidden px-2 py-0.5 rounded-lg hover:bg-sidebar-accent transition-colors duration-200">
-                          <NavLink
-                            to={`projects/${project.id}`}
-                            className="flex-1"
-                            onClick={() => setOpen(false)}
-                          >
-                            {({ isActive }) => (
-                              <SidebarMenuButton
-                                tooltip={
-                                  project?.title.charAt(0).toUpperCase() +
-                                  project?.title.slice(1)
-                                }
-                                isActive={isActive}
-                                className={`flex items-center justify-start gap-2 w-full rounded-md transition-colors duration-200
-          ${
-            isActive
-              ? "bg-primary text-white"
-              : "hover:bg-sidebar-accent hover:text-foreground"
-          }
-          px-3 py-2 text-[14px] font-medium truncate max-w-[180px]
-        `}
+            <ScrollArea className="h-[h-64] mt-2">
+              {state === "expanded" ||
+                (window.innerWidth < 640 && (
+                  <SidebarMenu className="space-y-0.5 mt-1">
+                    {projects.length > 0 ? (
+                      [...projects]
+                        .sort(
+                          (a, b) =>
+                            new Date(b.createdAt).getTime() -
+                            new Date(a.createdAt).getTime()
+                        )
+                        .map((project) => {
+                          const taskCount =
+                            taskCache[project?.id || ""]?.tasks?.length || 0;
+                          return (
+                            <SidebarMenuItem key={project.id}>
+                              <NavLink
+                                to={`projects/${project.id}`}
+                                onClick={() => setOpen(false)}
                               >
-                                <span>
-                                  {project.title.charAt(0).toUpperCase() +
-                                    project.title.slice(1)}
-                                </span>
-                              </SidebarMenuButton>
-                            )}
-                          </NavLink>
+                                {({ isActive }) => (
+                                  <SidebarMenuButton
+                                    tooltip={project?.title}
+                                    isActive={isActive}
+                                    className={`flex items-center justify-between gap-2 px-2 py-1.5 rounded-md text-[13px] font-medium truncate transition-colors ${
+                                      isActive
+                                        ? "bg-primary text-white"
+                                        : "hover:bg-sidebar-accent/70 hover:text-foreground"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 truncate">
+                                      <FolderOpen
+                                        size={14}
+                                        className={
+                                          isActive
+                                            ? "text-white"
+                                            : "text-muted-foreground"
+                                        }
+                                      />
+                                      <span className="truncate max-w-[110px]">
+                                        {project.title.charAt(0).toUpperCase() +
+                                          project.title.slice(1)}
+                                      </span>
+                                    </div>
 
-                          {/* Delete button */}
-                          <button
-                            onClick={() => deleteProject(project.id!)}
-                            className="p-2 text-muted-foreground hover:bg-red-500 hover:text-white rounded-md transition"
-                          >
-                            <AiOutlineDelete size={16} />
-                          </button>
-                        </div>
-                        {state === "expanded" && (
-                          <button
-                            onClick={() => deleteProject(project.id!)}
-                            className="p-1 ml-1 text-muted-foreground hover:bg-red-500 hover:text-white rounded transition"
-                          >
-                            <AiOutlineDelete size={15} />
-                          </button>
-                        )}
-                      </SidebarMenuItem>
-                    ))
-                ) : (
-                  <div className="px-3 py-6 text-sm text-muted-foreground flex flex-col items-center justify-center">
-                    {loading ? (
-                      <Loader />
+                                    {taskCount > 0 && (
+                                      <span
+                                        className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                                          isActive
+                                            ? "bg-white/20 text-white"
+                                            : "bg-muted text-muted-foreground"
+                                        }`}
+                                      >
+                                        {taskCount}
+                                      </span>
+                                    )}
+                                  </SidebarMenuButton>
+                                )}
+                              </NavLink>
+                            </SidebarMenuItem>
+                          );
+                        })
                     ) : (
-                      <>
-                        {state === "expanded" && (
+                      <div className="text-center py-6 text-xs text-muted-foreground">
+                        {loading ? (
+                          <Loader />
+                        ) : (
                           <>
-                            <span className="text-[13px] font-medium">
-                              No projects
-                            </span>
-                            <span className="text-[12px] text-muted-foreground">
-                              Add a project
-                            </span>
+                            <p>No projects</p>
+                            <p>Add one to get started</p>
                           </>
                         )}
-                      </>
+                      </div>
                     )}
-                  </div>
-                )}
-              </SidebarMenu>
+                  </SidebarMenu>
+                ))}
             </ScrollArea>
           </SidebarGroupContent>
         </SidebarGroup>

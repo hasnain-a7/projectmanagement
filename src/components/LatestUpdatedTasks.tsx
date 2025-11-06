@@ -30,7 +30,7 @@ const LatestUpdatedTasks: React.FC<LatestUpdatedTasksProps> = ({
 }) => {
   return (
     <Card
-      className={`w-full  pb-1 pt-1 min-h-min border border-border/50 rounded-lg mt-2 bg-card transition-all duration-300 `}
+      className={`w-full  pb-1 pt-1 min-h-min border-none border-border/50 rounded-lg mt-2 bg-card transition-all duration-300 `}
     >
       <CardHeader className="flex justify-between -ml-3">
         <CardTitle className="text-md">Recently Updated Tasks</CardTitle>

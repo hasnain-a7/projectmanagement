@@ -55,6 +55,7 @@ export interface Project {
   dueDate?: string;
   status?: string;
   assignedUsers?: string[];
+  projectEmoji?: string;
 }
 
 interface TaskContextType {
@@ -105,7 +106,8 @@ interface TaskContextType {
     Category: string,
     attachments: string[],
     dueDate?: string,
-    status?: string
+    status?: string,
+    projectEmoji?: string
   ) => Promise<string>;
   updateProject: (
     projectId: string,
@@ -116,7 +118,8 @@ interface TaskContextType {
     dueDate?: string,
     status?: string,
     assignedUsers?: string[],
-    deletedUsers?: string[]
+    deletedUsers?: string[],
+    projectEmoji?: string
   ) => Promise<boolean>;
   deleteProject: (projectId: string) => Promise<void>;
 }
@@ -265,7 +268,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
     Category?: string,
     attachments?: string[],
     dueDate?: string,
-    status?: string
+    status?: string,
+    projectEmoji?: string
   ) => {
     try {
       setLoading(true);
@@ -281,6 +285,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
         createdAt: new Date().toISOString(),
         dueDate: dueDate || "",
         status: status,
+        projectEmoji: projectEmoji,
       };
 
       const docRef = await addDoc(collection(db, "Projects"), projectData);
@@ -305,7 +310,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
     dueDate?: string,
     status?: string,
     assignedUsers?: string[],
-    deletedUsers?: string[]
+    deletedUsers?: string[],
+    projectEmoji?: string
   ) => {
     try {
       setLoading(true);
@@ -320,6 +326,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
         updatedAt: new Date().toISOString(),
         dueDate: dueDate || "",
         status: status || "",
+        projectEmoji: projectEmoji,
       };
       await updateDoc(projectRef, updatedData);
       if (assignedUsers && assignedUsers.length > 0) {

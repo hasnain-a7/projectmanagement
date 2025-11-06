@@ -1,15 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Plus,
-  FileText,
-  Users,
-  Tag,
-  Layers,
-  ListCheck,
-  Calendar,
-} from "lucide-react";
+import { Plus, Users, Tag, Layers, ListCheck, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -110,12 +102,15 @@ const TaskAccordionTable: React.FC<TaskAccordionTableProps> = ({
       <CardHeader>
         <CardTitle className=" flex sm:justify-between sm:items-center gap-2 text-lg">
           <div className="  flex items-center gap-2">
-            <FileText
+            {/* <FileText
               className="
             h-5 w-5 text-primary"
-            />
+            /> */}
+            <span className="text-4xl absolute top-59">
+              {specifictaskdata?.projectEmoji && specifictaskdata?.projectEmoji}
+            </span>
 
-            <h5 className="text-[16px] md:font-semibold ">
+            <h5 className="text-[22px] md:font-semibold mt-2 ">
               {specifictaskdata &&
                 specifictaskdata?.title.charAt(0).toUpperCase() +
                   specifictaskdata?.title.slice(1)}

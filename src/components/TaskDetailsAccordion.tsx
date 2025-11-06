@@ -44,6 +44,15 @@ const TaskDetailsAccordion = ({
               <div className="w-2 h-2 rounded-full bg-cyan-400 mr-3" />
               <span className="flex w-full text-sm font-medium justify-between truncate">
                 {task.title?.split(" ").slice(0, 4).join(" ")}
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Eye
+                      size={20}
+                      className=" text-muted-foreground hover:text-primary cursor-pointer"
+                    />
+                  </DialogTrigger>
+                  <TaskDetailModal task={task} />
+                </Dialog>
               </span>
             </div>
           </AccordionTrigger>
