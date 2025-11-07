@@ -20,6 +20,7 @@ import {
 import DatePicker from "./DatePicker";
 import { useParams } from "react-router-dom";
 import { Separator } from "./ui/separator";
+import EmojiInput from "./EmojiInput";
 
 export interface TaskFormData {
   title: string;
@@ -28,6 +29,7 @@ export interface TaskFormData {
   attachments: string[];
   dueDate: string;
   createdAt?: string;
+  todoEmoji?: string;
 }
 
 interface TodoModelProps {
@@ -47,6 +49,7 @@ const TodoModel: React.FC<TodoModelProps> = ({ projectId, taskToEdit }) => {
     attachments: [],
     dueDate: "",
     createdAt: "",
+    todoEmoji: "",
   });
 
   // ✅ Set task data only when editing
@@ -59,6 +62,7 @@ const TodoModel: React.FC<TodoModelProps> = ({ projectId, taskToEdit }) => {
         attachments: taskToEdit.attachments || [],
         dueDate: taskToEdit.dueDate || "",
         createdAt: taskToEdit.createdAt || "",
+        todoEmoji: taskToEdit.todoEmoji,
       });
     } else {
       setFormData({
@@ -68,6 +72,7 @@ const TodoModel: React.FC<TodoModelProps> = ({ projectId, taskToEdit }) => {
         attachments: [],
         dueDate: "",
         createdAt: "",
+        todoEmoji: "",
       });
     }
   }, [taskToEdit]);
@@ -148,12 +153,25 @@ const TodoModel: React.FC<TodoModelProps> = ({ projectId, taskToEdit }) => {
             <label className="text-sm font-medium text-foreground">
               Task Title
             </label>
-            <Input
-              placeholder="Enter task title..."
-              value={formData.title}
-              onChange={(e) => handleInputChange("title", e.target.value)}
-              className="mt-1"
-            />
+            <div className="relative flex items-center gap-2 mt-2">
+              <Input
+                placeholder="Enter project title..."
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                className="flex-1 pr-10"
+              />
+
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <EmojiInput
+                  value={formData?.todoEmoji || ""}
+                  onChange={(todoEmoji) =>
+                    setFormData({ ...formData, todoEmoji })
+                  }
+                />
+              </div>
+            </div>
           </div>
 
           <div className="space-y-2">

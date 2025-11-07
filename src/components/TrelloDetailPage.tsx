@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -66,16 +67,16 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
           />{" "}
         </div>
       )}
-
-      {/* 🔹 Content */}
+      {/* ✅ Add description here */}
+      <DialogDescription></DialogDescription>
       <div className="p-6 sm:p-8 space-y-6">
-        {/* Title + Edit + Status */}
         <DialogHeader>
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             <div className="flex items-center gap-2">
               <DialogTitle className="text-2xl font-bold text-foreground">
                 {task.title}
               </DialogTitle>
+
               <Dialog>
                 <DialogTrigger asChild>
                   <button
@@ -91,6 +92,7 @@ const TaskDetailModal: React.FC<TaskDetailModalProps> = ({
                 <TodoModel projectId={projectId} taskToEdit={task} />
               </Dialog>
             </div>
+
             <Badge
               variant={getStatusVariant(task.status)}
               className="w-fit px-3 py-1 text-sm capitalize"

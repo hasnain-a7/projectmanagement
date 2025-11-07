@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { ProjectCard } from "@/components/ProjectCard";
 import type { Project } from "@/TaskContext/TaskContext";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
   ClipboardList,
@@ -115,24 +116,59 @@ const ProjectsBoard: React.FC = () => {
           return (
             <TabsContent key={status} value={status} className="mt-2 ">
               <ScrollArea className="h-[calc(100vh-300px)]  rounded-md">
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+                <motion.div
+                  className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6"
+                  initial="hidden"
+                  animate="visible"
+                  variants={{
+                    hidden: { opacity: 0 },
+                    visible: {
+                      opacity: 1,
+                      transition: { staggerChildren: 0.08 },
+                    },
+                  }}
+                >
                   {projectsForStatus.length === 0 ? (
-                    <div className="col-span-full text-center py-12">
+                    <motion.div
+                      className="col-span-full text-center py-12"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                    >
                       <p className="text-muted-foreground text-sm">
                         No projects found for this status.
                       </p>
-                    </div>
+                    </motion.div>
                   ) : (
-                    projectsForStatus.map((project) => (
-                      <ProjectCard
+                    projectsForStatus.map((project, index) => (
+                      <motion.div
                         key={project.id}
-                        projectToShow={project}
-                        tasks={taskCache[project.id!]?.tasks || []}
-                        onClick={handleProjectClick}
-                      />
+                        variants={{
+                          hidden: { opacity: 0, y: 25 },
+                          visible: {
+                            opacity: 1,
+                            y: 0,
+                            transition: {
+                              duration: 0.4,
+                              delay: index * 0.05,
+                              ease: "easeOut",
+                            },
+                          },
+                        }}
+                        whileHover={{
+                          scale: 1.02,
+                          transition: { duration: 0.2 },
+                        }}
+                      >
+                        <ProjectCard
+                          projectToShow={project}
+                          tasks={taskCache[project.id!]?.tasks || []}
+                          onClick={handleProjectClick}
+                        />
+                      </motion.div>
                     ))
                   )}
-                </div>
+                </motion.div>
 
                 <ScrollBar orientation="vertical" />
               </ScrollArea>

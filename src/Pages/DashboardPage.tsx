@@ -163,7 +163,7 @@ const DashboardPage: React.FC = () => {
                           {!loading &&
                             (!statusTasks[statusKey] ||
                               statusTasks[statusKey].length === 0) && (
-                              <p className="text-sm text-muted-foreground text-center">
+                              <p className="text-[12px] text-muted-foreground text-center">
                                 No tasks.
                               </p>
                             )}

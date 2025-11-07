@@ -26,6 +26,7 @@ export interface Task {
   dueDate?: string;
   userId?: string | null;
   projectId?: string;
+  todoEmoji?: string;
 }
 export interface User {
   id?: string;
@@ -397,6 +398,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
       status: string;
       attachments?: string[];
       dueDate?: string;
+      todoEmoji?: string;
     }
   ): Promise<string> => {
     try {
@@ -407,6 +409,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
         attachments: formData.attachments ?? [],
         createdAt: new Date().toISOString(),
         dueDate: formData.dueDate ?? "",
+        todoEmoji: formData.todoEmoji,
       };
 
       const taskRef = await addDoc(
@@ -467,6 +470,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({
       status?: string;
       attachments?: string[];
       dueDate?: string;
+      todoEmoji?: string;
     }
   ): Promise<void> => {
     try {

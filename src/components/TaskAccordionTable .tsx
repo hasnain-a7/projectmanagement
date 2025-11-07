@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useTaskContext, type Task } from "@/TaskContext/TaskContext";
-
 import {
   Accordion,
   AccordionContent,
@@ -205,73 +204,114 @@ const TaskAccordionTable: React.FC<TaskAccordionTableProps> = ({
                 </div>
               </AccordionTrigger>
 
-              <AccordionContent className="px-0 pb-0 ">
+              <AccordionContent className="px-0 pb-0">
                 <div>
-                  <div className="hidden  sm:grid grid-cols-12 gap-2 px-3 py-2 bg-accent text-card-foreground text-xs font-semibold uppercase rounded-t-2xl">
-                    <div className="col-span-5">Name</div>
-                    <div className="col-span-2">Priority</div>
-                    <div className="col-span-2">Due Date</div>
-                    <div className="col-span-3">Created</div>
+                  <div className="hidden sm:grid grid-cols-12 gap-2 px-3 py-2 bg-muted/40 text-muted-foreground text-[11px] font-semibold uppercase rounded-t-2xl tracking-wide">
+                    <div className="col-span-4">Name</div>
+                    <div className="col-span-2 text-center">Priority</div>
+                    <div className="col-span-2 text-center">Due</div>
+                    <div className="col-span-2 text-center">Updated</div>
+                    <div className="col-span-2 text-center">Created</div>
                   </div>
 
                   {section.tasks.map((task) => (
-                    <div key={task.id} className="border-b pb-2 ">
-                      <div className="hidden sm:grid grid-cols-12 gap-2 py-2 items-center">
-                        <div className="col-span-5 ">
+                    <div
+                      key={task.id}
+                      className="border-b border-border/60 last:border-0 py-2 hover:bg-accent/30 transition-colors"
+                    >
+                      <div className="hidden sm:grid grid-cols-12 mt-1  items-start text-sm px-2 ">
+                        <div className="col-span-4 truncate">
                           <TaskDetailsAccordion
                             task={task}
                             projectid={projectId ?? ""}
                           />
                         </div>
-                        <div className="col-span-2 flex items-center">
+
+                        <div className="col-span-2 flex justify-center">
                           <Badge
-                            className={getPriorityInfo(task.dueDate).className}
+                            className={`${
+                              getPriorityInfo(task?.dueDate).className
+                            } text-xs px-2 py-0.5`}
                           >
-                            {getPriorityInfo(task.dueDate).label}
+                            {getPriorityInfo(task?.dueDate).label}
                           </Badge>
                         </div>
-                        <div className="col-span-2 flex items-center">
-                          <span className="text-sm">
-                            {task.dueDate
-                              ? new Date(task.dueDate).toLocaleDateString()
-                              : "—"}
-                          </span>
+
+                        <div className="col-span-2 text-center text-muted-foreground">
+                          {task.dueDate
+                            ? new Date(task?.dueDate).toLocaleDateString()
+                            : "—"}
                         </div>
-                        <div className="col-span-3 flex items-center">
-                          <span className="text-sm">
-                            {task.createdAt
-                              ? new Date(task.createdAt).toLocaleDateString()
+
+                        <div className="col-span-2 flex justify-center">
+                          <Badge
+                            variant="outline"
+                            className="text-[11px] px-2 py-0.5 text-muted-foreground"
+                          >
+                            {task.updatedAt
+                              ? new Date(task?.updatedAt).toLocaleDateString()
                               : "—"}
-                          </span>
+                          </Badge>
+                        </div>
+
+                        <div className="col-span-2 text-center text-muted-foreground">
+                          {task.createdAt
+                            ? new Date(task?.createdAt).toLocaleDateString()
+                            : "—"}
                         </div>
                       </div>
 
-                      <div className="sm:hidden flex flex-col gap-2 ">
+                      <div className="sm:hidden flex flex-col gap-2 px-2 text-sm">
                         <TaskDetailsAccordion
                           task={task}
                           projectid={projectId ?? ""}
                         />
-                        <div className="flex justify-between text-sm">
-                          <span className="font-medium">Priority:</span>
+
+                        <div className="flex justify-between">
+                          <span className="font-medium text-muted-foreground">
+                            Priority:
+                          </span>
                           <Badge
-                            className={getPriorityInfo(task.dueDate).className}
+                            className={`${
+                              getPriorityInfo(task?.dueDate).className
+                            } text-xs px-2 py-0.5`}
                           >
-                            {getPriorityInfo(task.dueDate).label}
+                            {getPriorityInfo(task?.dueDate).label}
                           </Badge>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="font-medium">Due Date:</span>
+
+                        <div className="flex justify-between">
+                          <span className="font-medium text-muted-foreground">
+                            Due:
+                          </span>
                           <span>
-                            {task.dueDate
-                              ? new Date(task.dueDate).toLocaleDateString()
+                            {task?.dueDate
+                              ? new Date(task?.dueDate).toLocaleDateString()
                               : "—"}
                           </span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="font-medium">Created:</span>
+
+                        <div className="flex justify-between">
+                          <span className="font-medium text-muted-foreground">
+                            Updated:
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className="text-xs px-2 py-0.5"
+                          >
+                            {task?.updatedAt
+                              ? new Date(task?.updatedAt).toLocaleDateString()
+                              : "—"}
+                          </Badge>
+                        </div>
+
+                        <div className="flex justify-between">
+                          <span className="font-medium text-muted-foreground">
+                            Created:
+                          </span>
                           <span>
-                            {task.createdAt
-                              ? new Date(task.createdAt).toLocaleDateString()
+                            {task?.createdAt
+                              ? new Date(task?.createdAt).toLocaleDateString()
                               : "—"}
                           </span>
                         </div>

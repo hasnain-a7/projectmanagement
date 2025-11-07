@@ -35,19 +35,15 @@ export function UpcomingDeadlines({ projects = [] }: { projects: Project[] }) {
       </CardHeader>
       <ScrollArea className="w-full ">
         <CardContent className="p-0 max-h-[68px]">
-          <div className="flex flex-col gap-1 px-3 ">
+          <div className="flex flex-col  px-2 ">
             {sorted.length > 0 ? (
               sorted.map((p) => (
                 <div
                   key={p.id}
-                  className="flex justify-between text-xs text-muted-foreground"
+                  onClick={() => handleProjectClick(p?.id || "")}
+                  className="flex justify-between text-xs px-2 py-1 text-muted-foreground rounded-md transition-transform duration-200 ease-in-out hover:bg-accent hover:-translate-y-0.5 hover:shadow-md cursor-pointer"
                 >
-                  <h2
-                    className=" max-w-[65%] cursor-pointer"
-                    onClick={() => handleProjectClick(p?.id || "")}
-                  >
-                    {p.title}
-                  </h2>
+                  <h2 className=" max-w-[65%] cursor-pointer">{p.title}</h2>
                   <span className="text-foreground font-medium">
                     {new Date(p.dueDate ?? 0).toLocaleDateString("en-US", {
                       month: "short",

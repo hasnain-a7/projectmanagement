@@ -86,7 +86,10 @@ export const ProjectCard = ({
   };
 
   return (
-    <Card className="w-full relative border border-border/50 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden pb-1">
+    <Card
+      onClick={handleCardClick}
+      className="w-full relative border border-border/50 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer overflow-hidden pb-1"
+    >
       {projectToShow?.attachments && projectToShow.attachments.length > 0 ? (
         <div className="w-full  h-30 md:h-12 -mt-3">
           <img
@@ -107,6 +110,9 @@ export const ProjectCard = ({
             <DialogTrigger asChild>
               <FaEdit
                 size={16}
+                onClick={(e) => {
+                  e.stopPropagation();
+                }}
                 className=" absolute top-32 md:top-13 right-2 text-muted-foreground hover:text-primary cursor-pointer"
               />
             </DialogTrigger>
@@ -121,10 +127,7 @@ export const ProjectCard = ({
         )}
       </CardHeader>
 
-      <CardContent
-        className="flex flex-col gap-1 -mt-2 -ml-3 px-4"
-        onClick={handleCardClick}
-      >
+      <CardContent className="flex flex-col gap-1 -mt-2 -ml-3 px-4">
         <CardTitle
           className={`text-base font-semibold ${
             projectToShow?.projectEmoji && "ml-6"

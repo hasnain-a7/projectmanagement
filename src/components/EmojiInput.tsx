@@ -37,7 +37,7 @@ const EmojiInput = ({
           </TooltipTrigger>
 
           <TooltipContent side="top" className="text-sm">
-            {value ? "Project emoji" : "Select an emoji"}
+            {value ? "Display Icon" : "Select an Icon"}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

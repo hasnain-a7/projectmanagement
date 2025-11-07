@@ -44,17 +44,13 @@ const LatestProject: React.FC<LatestProjectProps> = ({ LatestProjects }) => {
               {top5UpdatedProjects.map((project) => (
                 <Card
                   key={project.id}
+                  onClick={() => handleNavigateToPage(project.id)}
                   className="border rounded-md p-2 relative transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:shadow-md cursor-pointer"
                 >
                   <CardContent className="p-0">
                     <div className="relative flex justify-between items-start">
                       <div>
-                        <p
-                          className="font-medium"
-                          onClick={() => handleNavigateToPage(project.id)}
-                        >
-                          {project.title}
-                        </p>
+                        <p className="font-medium">{project.title}</p>
                         {/* <p className="text-sm text-gray-500">
                           Category: {project.Category || "N/A"}
                         </p> */}
@@ -77,6 +73,9 @@ const LatestProject: React.FC<LatestProjectProps> = ({ LatestProjects }) => {
                           <DialogTrigger asChild>
                             <FaEdit
                               size={16}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
                               className="text-muted-foreground hover:text-primary cursor-pointer"
                             />
                           </DialogTrigger>

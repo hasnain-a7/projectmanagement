@@ -203,9 +203,89 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 </div>
               )}
             </div>
-            <ScrollArea className="h-[h-64] mt-2">
-              {state === "expanded" ||
-                (window.innerWidth < 640 && (
+
+            <div className="">
+              <ScrollArea className="h-[h-64] mt-2">
+                {window.innerWidth < 640 && (
+                  <SidebarMenu className="space-y-0.5 mt-1">
+                    {projects.length > 0 ? (
+                      [...projects]
+                        .sort(
+                          (a, b) =>
+                            new Date(b.createdAt).getTime() -
+                            new Date(a.createdAt).getTime()
+                        )
+                        .map((project) => {
+                          const taskCount =
+                            taskCache[project?.id || ""]?.tasks?.length || 0;
+                          return (
+                            <SidebarMenuItem key={project.id}>
+                              <NavLink
+                                to={`projects/${project.id}`}
+                                onClick={() => setOpen(false)} // closes sidebar on mobile
+                              >
+                                {({ isActive }) => (
+                                  <SidebarMenuButton
+                                    tooltip={project?.title}
+                                    isActive={isActive}
+                                    className={`flex items-center justify-between gap-2 px-2 py-1.5 rounded-md text-[13px] font-medium truncate transition-colors ${
+                                      isActive
+                                        ? "bg-primary text-white"
+                                        : "hover:bg-sidebar-accent/70 hover:text-foreground"
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2 truncate">
+                                      <FolderOpen
+                                        size={14}
+                                        className={
+                                          isActive
+                                            ? "text-white"
+                                            : "text-muted-foreground"
+                                        }
+                                      />
+                                      <span className="truncate max-w-[110px]">
+                                        {project.title.charAt(0).toUpperCase() +
+                                          project.title.slice(1)}
+                                      </span>
+                                    </div>
+
+                                    {taskCount > 0 && (
+                                      <span
+                                        className={`text-[10px] px-1.5 py-0.5 rounded-full ${
+                                          isActive
+                                            ? "bg-white/20 text-white"
+                                            : "bg-muted text-muted-foreground"
+                                        }`}
+                                      >
+                                        {taskCount}
+                                      </span>
+                                    )}
+                                  </SidebarMenuButton>
+                                )}
+                              </NavLink>
+                            </SidebarMenuItem>
+                          );
+                        })
+                    ) : (
+                      <div className="text-center py-6 text-xs text-muted-foreground">
+                        {loading ? (
+                          <Loader />
+                        ) : (
+                          <>
+                            <p>No projects</p>
+                            <p>Add one to get started</p>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </SidebarMenu>
+                )}
+              </ScrollArea>
+            </div>
+
+            <div className="hidden sm:block">
+              <ScrollArea className="h-[h-64] mt-2">
+                {state === "expanded" && (
                   <SidebarMenu className="space-y-0.5 mt-1">
                     {projects.length > 0 ? (
                       [...projects]
@@ -278,8 +358,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                       </div>
                     )}
                   </SidebarMenu>
-                ))}
-            </ScrollArea>
+                )}
+              </ScrollArea>
+            </div>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>

@@ -70,6 +70,9 @@ const LatestUpdatedTasks: React.FC<LatestUpdatedTasksProps> = ({
                           <DialogTrigger asChild>
                             <Eye
                               size={20}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
                               className="text-muted-foreground hover:text-primary cursor-pointer"
                             />
                           </DialogTrigger>
@@ -81,6 +84,9 @@ const LatestUpdatedTasks: React.FC<LatestUpdatedTasksProps> = ({
                           <DialogTrigger asChild>
                             <FaEdit
                               size={16}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
                               className="text-muted-foreground hover:text-primary cursor-pointer"
                             />
                           </DialogTrigger>

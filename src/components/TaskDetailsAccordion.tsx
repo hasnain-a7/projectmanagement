@@ -39,20 +39,51 @@ const TaskDetailsAccordion = ({
           value={`task-${task.id}`}
           className="border-b last:border-b-0  cursor-pointer"
         >
-          <AccordionTrigger className="hover:no-underline md:px-3 py-1">
-            <div className="flex items-center w-full cursor-pointer">
-              <div className="w-2 h-2 rounded-full bg-cyan-400 mr-3" />
+          <AccordionTrigger className="hover:no-underline md:px-3 py-0">
+            <div className="flex gap-1 items-center w-full cursor-pointer">
+              {task?.todoEmoji ? (
+                <span className="text-[13px]">{task?.todoEmoji}</span>
+              ) : (
+                <div className="w-3 h-3 rounded-full bg-cyan-400 ml-0.5 mr-1 "></div>
+              )}
               <span className="flex w-full text-sm font-medium justify-between truncate">
                 {task.title?.split(" ").slice(0, 4).join(" ")}
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Eye
-                      size={20}
-                      className=" text-muted-foreground hover:text-primary cursor-pointer"
-                    />
-                  </DialogTrigger>
-                  <TaskDetailModal task={task} />
-                </Dialog>
+                <div className=" flex gap-2">
+                  <Dialog>
+                    <DialogTrigger
+                      asChild
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Eye
+                        size={20}
+                        className="text-muted-foreground hover:text-primary cursor-pointer"
+                      />
+                    </DialogTrigger>
+                    <TaskDetailModal task={task} />
+                  </Dialog>
+                  <MdDeleteOutline
+                    size={18}
+                    className=" text-muted-foreground hover:text-primary cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelChange(task.id || "");
+                    }}
+                  />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <FaEdit
+                        size={16}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        className="text-muted-foreground hover:text-primary cursor-pointer"
+                      />
+                    </DialogTrigger>
+                    <TodoModel projectId={projectid} taskToEdit={task} />
+                  </Dialog>
+                </div>
               </span>
             </div>
           </AccordionTrigger>
@@ -71,13 +102,13 @@ const TaskDetailsAccordion = ({
                       </div>
                     </div>
 
-                    <p className="text-sm w-full text-foreground/80 line-clamp-3">
+                    <p className="text-sm max-w-full break-words whitespace-pre-wrap text-foreground/80 line-clamp-3">
                       {task.todo}
                     </p>
                   </div>
                 </div>
               </div>
-              <Dialog>
+              {/* <Dialog>
                 <DialogTrigger asChild>
                   <Eye
                     size={20}
@@ -101,7 +132,7 @@ const TaskDetailsAccordion = ({
                 size={18}
                 className="absolute top-2 right-8 text-muted-foreground hover:text-primary cursor-pointer"
                 onClick={() => handleDelChange(task.id || "")}
-              />
+              /> */}
             </div>
           </AccordionContent>
         </AccordionItem>

@@ -37,8 +37,8 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({ setopen, state }) => {
           <SidebarMenuButton
             className={`relative w-full transition-all duration-200 ${
               state === "expanded"
-                ? "flex items-center justify-between px-1 py-6"
-                : "flex flex-col items-center justify-center gap-1 ml-2 py-3"
+                ? "flex  px-1 py-6"
+                : "flex flex-col items-center justify-center  ml-2 py-3"
             }`}
             onClick={() => {
               if (state === "collapsed") setopen(true);
@@ -60,7 +60,7 @@ const SidebarFooter: React.FC<SidebarFooterProps> = ({ setopen, state }) => {
             </Avatar>
 
             {state === "expanded" && (
-              <div className="flex-1 flex flex-col ml-2">
+              <div className="flex-1 flex flex-col ">
                 <h3 className="text-sm font-semibold text-foreground truncate">
                   {userData?.fullname || "Account"}
                 </h3>
